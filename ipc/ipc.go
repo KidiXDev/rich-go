@@ -1,9 +1,10 @@
 package ipc
 
 import (
-	"bytes"
 	"encoding/binary"
+	"errors"
 	"fmt"
+	"io"
 	"net"
 	"os"
 )
@@ -42,39 +43,45 @@ func CloseSocket() error {
 }
 
 // Read the socket response
-func Read() string {
-	buf := make([]byte, 512)
-	payloadlength, err := socket.Read(buf)
-	if err != nil {
-		//fmt.Println("Nothing to read")
+func Read() ([]byte, error) {
+	if socket == nil {
+		return nil, errors.New("discord ipc socket is not open")
 	}
 
-	buffer := new(bytes.Buffer)
-	for i := 8; i < payloadlength; i++ {
-		buffer.WriteByte(buf[i])
+	header := make([]byte, 8)
+	if _, err := io.ReadFull(socket, header); err != nil {
+		return nil, err
 	}
 
-	return buffer.String()
+	payloadLength := int(binary.LittleEndian.Uint32(header[4:8]))
+	if payloadLength < 0 {
+		return nil, fmt.Errorf("invalid payload length: %d", payloadLength)
+	}
+	if payloadLength == 0 {
+		return []byte{}, nil
+	}
+
+	payload := make([]byte, payloadLength)
+	if _, err := io.ReadFull(socket, payload); err != nil {
+		return nil, err
+	}
+
+	return payload, nil
 }
 
 // Send opcode and payload to the unix socket
-func Send(opcode int, payload string) string {
-	buf := new(bytes.Buffer)
-
-	err := binary.Write(buf, binary.LittleEndian, int32(opcode))
-	if err != nil {
-		fmt.Println(err)
+func Send(opcode int, payload string) ([]byte, error) {
+	if socket == nil {
+		return nil, errors.New("discord ipc socket is not open")
 	}
 
-	err = binary.Write(buf, binary.LittleEndian, int32(len(payload)))
-	if err != nil {
-		fmt.Println(err)
-	}
+	buf := make([]byte, 8+len(payload))
+	binary.LittleEndian.PutUint32(buf[0:4], uint32(opcode))
+	binary.LittleEndian.PutUint32(buf[4:8], uint32(len(payload)))
+	copy(buf[8:], payload)
 
-	buf.Write([]byte(payload))
-	_, err = socket.Write(buf.Bytes())
-	if err != nil {
-		fmt.Println(err)
+	if _, err := socket.Write(buf); err != nil {
+		return nil, err
 	}
 
 	return Read()
