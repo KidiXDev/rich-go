@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/hugolgst/rich-go/client"
+	"github.com/KidiXDev/rich-go/client"
 )
 
 func main() {
@@ -14,25 +14,25 @@ func main() {
 	}
 
 	now := time.Now()
+	activityType := client.ActivityTypeListening
+	statusDisplayType := client.StatusDisplayTypeDetails
 	err = client.SetActivity(client.Activity{
-		State:      "Heyy!!!",
-		Details:    "I'm running on rich-go :)",
-		LargeImage: "largeimageid",
-		LargeText:  "This is the large image :D",
-		SmallImage: "smallimageid",
-		SmallText:  "And this is the small image",
-		Party: &client.Party{
-			ID:         "-1",
-			Players:    15,
-			MaxPlayers: 24,
-		},
+		Type:              activityType,
+		StatusDisplayType: &statusDisplayType,
+		Name:              "Never Gonna Give You Up",
+		Details:           "Rick Astley",
+		State:             "Whenever You Need Somebody",
+		LargeImage:        "album_cover",
+		LargeText:         "Never Gonna Give You Up",
+		SmallImage:        "music",
+		SmallText:         "Listening to...",
 		Timestamps: &client.Timestamps{
 			Start: &now,
 		},
 		Buttons: []*client.Button{
-			&client.Button{
+			{
 				Label: "GitHub",
-				Url:   "https://github.com/hugolgst/rich-go",
+				Url:   "https://github.com/KidiXDev/rich-go",
 			},
 		},
 	})
