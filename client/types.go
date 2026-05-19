@@ -1,7 +1,7 @@
 package client
 
 type Handshake struct {
-	V        string `json:"v"`
+	V        int    `json:"v"`
 	ClientId string `json:"client_id"`
 }
 
@@ -17,20 +17,28 @@ type Args struct {
 }
 
 type PayloadActivity struct {
-	Details    string             `json:"details,omitempty"`
-	State      string             `json:"state,omitempty"`
-	Assets     PayloadAssets      `json:"assets,omitempty"`
-	Party      *PayloadParty      `json:"party,omitempty"`
-	Timestamps *PayloadTimestamps `json:"timestamps,omitempty"`
-	Secrets    *PayloadSecrets    `json:"secrets,omitempty"`
-	Buttons    []*PayloadButton   `json:"buttons,omitempty"`
+	Name              string             `json:"name,omitempty"`
+	Type              *int               `json:"type,omitempty"`
+	StatusDisplayType *int               `json:"status_display_type,omitempty"`
+	Details           string             `json:"details,omitempty"`
+	DetailsURL        string             `json:"details_url,omitempty"`
+	State             string             `json:"state,omitempty"`
+	StateURL          string             `json:"state_url,omitempty"`
+	Assets            PayloadAssets      `json:"assets,omitempty"`
+	Party             *PayloadParty      `json:"party,omitempty"`
+	Timestamps        *PayloadTimestamps `json:"timestamps,omitempty"`
+	Secrets           *PayloadSecrets    `json:"secrets,omitempty"`
+	Buttons           []*PayloadButton   `json:"buttons,omitempty"`
+	Instance          *bool              `json:"instance,omitempty"`
 }
 
 type PayloadAssets struct {
 	LargeImage string `json:"large_image,omitempty"`
 	LargeText  string `json:"large_text,omitempty"`
+	LargeURL   string `json:"large_url,omitempty"`
 	SmallImage string `json:"small_image,omitempty"`
 	SmallText  string `json:"small_text,omitempty"`
+	SmallURL   string `json:"small_url,omitempty"`
 }
 
 type PayloadParty struct {
