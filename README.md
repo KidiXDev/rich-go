@@ -1,20 +1,40 @@
-# rich-go [![Build Status](https://travis-ci.org/hugolgst/rich-go.svg?branch=master)](https://travis-ci.org/hugolgst/rich-go)
-
+# rich-go
 An implementation of Discord's rich presence in Golang for Linux, macOS and Windows
+
+## Project Status
+
+This repository is a maintained continuation of the original [hugolgst/rich-go](https://github.com/hugolgst/rich-go) project.
+
+## What's Updated In This Fork
+
+- Kept IPC RPC flow compatible with current Discord desktop clients.
+- Updated activity payload support for newer fields such as:
+  - `type` (including `Listening` for music-player presence)
+  - `status_display_type`
+  - `details_url` and `state_url`
+  - `large_url` and `small_url` in assets
+  - `instance`
+- Added activity type constants for easier usage:
+  - `ActivityTypePlaying`
+  - `ActivityTypeStreaming`
+  - `ActivityTypeListening`
+  - `ActivityTypeWatching`
+  - `ActivityTypeCustom`
+  - `ActivityTypeCompeting`
 
 ## Installation
 
-Install `github.com/hugolgst/rich-go`:
+Install `github.com/KidiXDev/rich-go`:
 
 ```
-$ go get github.com/hugolgst/rich-go
+$ go get github.com/KidiXDev/rich-go
 ```
 
 ## Usage
 
 First of all import rich-go
 ```golang
-import "github.com/hugolgst/rich-go/client"
+import "github.com/KidiXDev/rich-go/client"
 ```
 
 then login by sending the first handshake
@@ -25,22 +45,30 @@ if err != nil {
 }
 ```
 
-and you can set the Rich Presence activity (parameters can be found :
+and you can set the Rich Presence activity:
 ```golang
+now := time.Now()
+activityType := client.ActivityTypeListening
+statusDisplayType := client.StatusDisplayTypeDetails
+
 err = client.SetActivity(client.Activity{
-	State:      "Heyy!!!",
-	Details:    "I'm running on rich-go :)",
-	LargeImage: "largeimageid",
-	LargeText:  "This is the large image :D",
-	SmallImage: "smallimageid",
-	SmallText:  "And this is the small image",
-	Party: &client.Party{
-		ID:         "-1",
-		Players:    15,
-		MaxPlayers: 24,
-	},
+	Type:              activityType,
+	StatusDisplayType: &statusDisplayType,
+	Name:              "Never Gonna Give You Up",
+	Details:           "Rick Astley",
+	State:             "Whenever You Need Somebody",
+	LargeImage:        "album_cover",
+	LargeText:         "Never Gonna Give You Up",
+	SmallImage:        "music",
+	SmallText:         "Listening to...",
 	Timestamps: &client.Timestamps{
-		Start: time.Now(),
+		Start: &now,
+	},
+	Buttons: []*client.Button{
+		{
+			Label: "Open Player",
+			Url:   "https://example.com/player",
+		},
 	},
 })
 
@@ -49,18 +77,20 @@ if err != nil {
 }
 ```
 
-More details in the [example](https://github.com/ananagame/rich-go/blob/master/example/main.go)
+`Activity.Type` supports Discord activity types via constants:
+- `client.ActivityTypePlaying`
+- `client.ActivityTypeStreaming`
+- `client.ActivityTypeListening`
+- `client.ActivityTypeWatching`
+- `client.ActivityTypeCustom`
+- `client.ActivityTypeCompeting`
+
+More details in the [example](https://github.com/KidiXDev/rich-go/blob/master/example/main.go)
 
 ## Contributing
 
-1. Fork it (https://github.com/hugolgst/rich-go/fork)
+1. Fork it (https://github.com/KidiXDev/rich-go/fork)
 2. Create your feature branch (git checkout -b my-new-feature)
 3. Commit your changes (git commit -am 'Add some feature')
 4. Push to the branch (git push origin my-new-feature)
 5. Create a new Pull Request
-
-## Contributors
-
-- [hugolgst](https://github.com/hugolgst) - creator, maintainer
-- [donovansolms](https://github.com/donovansolms) - contributor
-- [heroslender](https://github.com/heroslender) - contributor
